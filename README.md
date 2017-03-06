@@ -9,7 +9,7 @@
 OUTPUTDIR="/data/wangj/TutorialsSamples/tmvaBntupleRunII"
 </pre>
 </li>
-<li> Run the macros <br />
+<li> Run the macros
 <pre> 
 source doTMVA.sh
 </pre> 
@@ -34,10 +34,9 @@ source doTMVA.sh
 
 <h3> readxml/ </h3>
 <ol>
-<li> <code>readxml_BDT.cc</code> is for BDT method. It produces <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/BDT_PbPb_pT_7_10_disEffSB.pdf">BDT distribution</a>, <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/BDT_PbPb_pT_7_10_EffvsBDT.pdf">Efficiency vs. BDT cut value</a>, <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/BDT_PbPb_pT_7_10_Significance.pdf">S/sqrt(S+B) vs. BDT cut value</a>, etc. 
-<img src="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/BDT_PbPb_pT_7_10_Significance.pdf" alt="Significance" style="width:304px;height:228px;">
+<li> <code>readxml_BDT.cc</code> is for BDT method. It produces <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/BDT_PbPb_pT_7_10_disEffSB.pdf">BDT distribution</a>, <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/BDT_PbPb_pT_7_10_EffvsBDT.pdf">Efficiency vs. BDT cut value</a>, <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/BDT_PbPb_pT_7_10_Significance.pdf">S/sqrt(S+B) vs. BDT cut value</a>, etc. <br />
 </li>
-<li> Print out:
+<li> Printout: <br />
 <img src="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/plotsREADME/tmvaPrintout.png" alt="Printout" style="width:304px;height:228px">
 </li>
 </ol>

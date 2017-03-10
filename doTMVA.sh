@@ -5,7 +5,11 @@ DOMAKEVAR=1
 DOMERGE=1
 DOREADXML=1
 #
-OUTPUTDIR="/data/wangj/TutorialsSamples/tmvaBntupleRunII"
+OUTPUTDIR="/data/wangj/TutorialsSamples/test"
+if [ ! -d $OUTPUTDIR ]; then
+    mkdir $OUTPUTDIR
+fi
+
 #
 # if working on several ptbins, BDT.C need to be changed
 PTBIN=(7 10)

@@ -5,7 +5,7 @@ DOMAKEVAR=1
 DOMERGE=1
 DOREADXML=1
 #
-OUTPUTDIR="/data/wangj/TutorialsSamples/test"
+OUTPUTDIR="/data/wangj/TutorialsSamples/tmvaBntupleRunII"
 if [ ! -d $OUTPUTDIR ]; then
     mkdir $OUTPUTDIR
 fi

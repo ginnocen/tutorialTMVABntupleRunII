@@ -27,31 +27,14 @@
  *                                                                                *
  **********************************************************************************/
 
-#include "TMVAClassification.h"
-
-void TMVAClassification(int pbpb=0, float ptMin=7., float ptMax=10., TString myMethodList = "" )
+#include "../includes/TMVAClassification.h"
+void TMVAClassification(TString inputSname, TString inputBname,
+                        TString collisionsyst,
+                        TString mycuts, TString mycutb,
+                        Float_t ptmin, Float_t ptmax,
+                        TString myMethodList="")
 {
-  isPbPb = (bool)pbpb;
-  ptmin = ptMin;
-  ptmax = ptMax;
-  if(isPbPb)
-    {
-      inputSname = inputSname_PP;
-      inputBname = inputBname_PP;
-      mycuts = mycuts_PP;
-      mycutb = mycutb_PP;
-      mycutg = mycutg_PP;
-      colsyst = "PbPb";
-    }
-  else
-    {
-      inputSname = inputSname_pp;
-      inputBname = inputBname_pp;
-      mycuts = mycuts_pp;
-      mycutb = mycutb_pp;
-      mycutg = mycutg_pp;
-      colsyst = "pp";
-    }
+  Bool_t isPbPb = collisionsyst=="PbPb"?true:false;
   
   // The explicit loading of the shared libTMVA is done in TMVAlogon.C, defined in .rootrc
   // if you use your private .rootrc, or run from a different directory, please copy the
@@ -88,7 +71,7 @@ void TMVAClassification(int pbpb=0, float ptMin=7., float ptMax=10., TString myM
   Use["CutsD"]           = 0;
   Use["CutsPCA"]         = 0;
   Use["CutsGA"]          = 0;
-  Use["CutsSA"]          = 0;
+  Use["CutsSA"]          = 1;
   // 
   // --- 1-dimensional likelihood ("naive Bayes estimator")
   Use["Likelihood"]      = 0;
@@ -168,7 +151,7 @@ void TMVAClassification(int pbpb=0, float ptMin=7., float ptMax=10., TString myM
   // --- Here the preparation phase begins
   
   // Create a ROOT output file where TMVA will store ntuples, histograms, etc.
-  TString outfileName(Form("ROOT/TMVA_%s_%.0f_%.0f.root",colsyst.Data(),ptmin,ptmax));
+  TString outfileName("ROOT/TMVA.root");
   TFile* outputFile = TFile::Open(outfileName,"RECREATE");
   
   // Create the factory object. Later you can choose the methods
@@ -297,12 +280,8 @@ void TMVAClassification(int pbpb=0, float ptMin=7., float ptMax=10., TString myM
    //    factory->PrepareTrainingAndTestTree( mycut,
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
    
-   TString cuts; 
-   if(!isPbPb) cuts = Form("(%s)&&Bpt>%f&&Bpt<%f",mycuts.Data(),ptmin,ptmax);
-   else cuts = Form("(%s)&&Bpt>%f&&Bpt<%f&&hiBin>=0&&hiBin<=200",mycuts.Data(),ptmin,ptmax);
-   TString cutb; 
-   if(!isPbPb) cutb = Form("(%s)&&Bpt>%f&&Bpt<%f",mycutb.Data(),ptmin,ptmax);
-   else cutb = Form("(%s)&&Bpt>%f&&Bpt<%f&&hiBin>=0&&hiBin<=200",mycutb.Data(),ptmin,ptmax);
+   TString cuts = isPbPb?Form("(%s)&&Bpt>%f&&Bpt<%f&&hiBin>=0&&hiBin<=200",mycuts.Data(),ptmin,ptmax):Form("(%s)&&Bpt>%f&&Bpt<%f",mycuts.Data(),ptmin,ptmax); 
+   TString cutb = isPbPb?Form("(%s)&&Bpt>%f&&Bpt<%f&&hiBin>=0&&hiBin<=200",mycutb.Data(),ptmin,ptmax):Form("(%s)&&Bpt>%f&&Bpt<%f",mycutb.Data(),ptmin,ptmax);
    
    TCut mycutS = (TCut)cuts;
    TCut mycutB = (TCut)cutb;
@@ -336,7 +315,7 @@ void TMVAClassification(int pbpb=0, float ptMin=7., float ptMax=10., TString myM
 
    if (Use["CutsSA"])
       factory->BookMethod( TMVA::Types::kCuts, "CutsSA",
-                           "!H:!V:FitMethod=SA:EffSel:MaxCalls=150000:KernelTemp=IncAdaptive:InitialTemp=1e+6:MinTemp=1e-6:Eps=1e-10:UseDefaultScale:VarProp[0]=FMax:VarProp[1]=FMax:VarProp[2]=FMax:VarProp[3]=FMax:VarProp[4]=FMin" );
+                           "!H:!V:FitMethod=SA:EffSel:MaxCalls=150000:KernelTemp=IncAdaptive:InitialTemp=1e+6:MinTemp=1e-6:Eps=1e-10:UseDefaultScale:VarProp[0]=FMax:VarProp[1]=FMax:VarProp[2]=FMax:VarProp[3]=FMax:VarProp[4]=FMin::VarProp[5]=FMax" );
    //                           "!H:!V:FitMethod=SA:EffSel:MaxCalls=150000:KernelTemp=IncAdaptive:InitialTemp=1e+6:MinTemp=1e-6:Eps=1e-10:UseDefaultScale:VarProp[0]=FMax:VarProp[1]=FMax:VarProp[2]=FMax" );
 
    // Likelihood ("naive Bayes estimator")
@@ -523,4 +502,23 @@ void TMVAClassification(int pbpb=0, float ptMin=7., float ptMax=10., TString myM
 
    // Launch the GUI for the root macros
    if(!gROOT->IsBatch()) TMVAGui(outfileName);
+}
+
+int main(int argc, char* argv[])
+{
+  if(argc==9)
+    {
+      TMVAClassification(argv[1],argv[2],argv[3],argv[4],argv[5],atof(argv[6]),atof(argv[7]),argv[8]);
+      return 0;
+    }
+  else if(argc==8)
+    {
+      TMVAClassification(argv[1],argv[2],argv[3],argv[4],argv[5],atof(argv[6]),atof(argv[7]));
+      return 0;
+    }
+  else
+    {
+      std::cout<<"  Error: invalid argument number - TMVAClassification()"<<std::endl;
+      return 1;
+    }
 }

@@ -1,8 +1,9 @@
-#ifndef _READXML_H
-#define _READXML_H
+#ifndef _READXML_H_
+#define _READXML_H_
 
 #include "../includes/uti.h"
 #include "../includes/TMVAClassification.h"
+#include "../includes/cfout.h"
 
 const int NmaxFonll = 401; //fonll data points number
 float fcentral[NmaxFonll],fpt[NmaxFonll];
@@ -23,7 +24,7 @@ Float_t dmassBsidbandH = 0.3;
 Float_t massBsignalL = massB - dmassBsignal;
 Float_t massBsignalH = massB + dmassBsignal;
 
-TString outputresult = "results/significance";
+TString outputresult = "results/fresult";
 TString outputfonll = "plots/cfonll";
 TString outputmvadis = "plots/cmvadistribution";
 TString outputefficiency = "plots/cefficiency";
@@ -71,7 +72,7 @@ int calRatio(TTree* signal, TTree* background, TTree* generated,
   heff->Divide(hrec,hgen,1.,1.,"B");
   TH1D* htheoryreco = new TH1D("htheoryreco","",nbin-1,fpt);
   htheoryreco->Multiply(heff,hfonll,1,1,"B");
-  Float_t nS = htheoryreco->Integral()*BR*deltapt*lumi*raa;
+  Float_t nS = htheoryreco->Integral()*BR*deltapt*lumi*raa*2; // x2
 
   results[0] = nB;
   results[1] = nS;

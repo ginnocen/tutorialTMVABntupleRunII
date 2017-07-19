@@ -4,7 +4,7 @@ DOTMVA=1
 DOMAKEVAR=1
 DOMERGE=1
 DOREADXML=1
-#
+# modify OUTPUTDIR to a path you can write in #
 OUTPUTDIR="/data/wangj/TutorialsSamples/tmvaBntupleRunII/outputs/"
 if [ ! -d $OUTPUTDIR ]
 then
@@ -30,7 +30,10 @@ CUT=('pclusterCompatibilityFilter&&pprimaryVertexFilter&&phfCoincFilter3&abs(PVz
 MYCUTS=("${CUT[0]}&&Bgen==23333")
 MYCUTB=("${CUT[0]}&&TMath::Abs(Bmass-5.279)>0.2&&TMath::Abs(Bmass-5.279)<0.3")
 MYCUTG=("abs(Gy)<2.4&&abs(GpdgId)==521&&GisSignal==1");
-#
+
+# do not touch the lines below if you don't know what they mean #
+
+##
 nPT=${#PTMIN[@]}
 nMVA=${#MVA[@]}
 nCOL=${#COLSYST[@]}
@@ -53,7 +56,7 @@ function float_to_string()
 }
 
 #
-FOLDERS=("myTMVA/weights" "myTMVA/ROOT" "mva/MVAfiles" "readxml/plots")
+FOLDERS=("myTMVA/weights" "myTMVA/ROOT" "mva/MVAfiles" "readxml/plots" "readxml/results")
 for i in ${FOLDERS[@]}
 do
     if [ ! -d $i ]
@@ -75,7 +78,7 @@ then
         while ((i<$nPT))
         do
             tPT=pt_$(float_to_string ${PTMIN[i]})_$(float_to_string ${PTMAX[i]})
-            echo -e "-- Processing \033[1;33mTMVAClassification.C ${NC} pT bin: \033[1;32m${PTMIN[i]} - ${PTMAX[i]} GeV/c${NC}"
+            echo -e "-- Processing \033[1;33mTMVAClassification.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${PTMIN[i]} - ${PTMAX[i]} GeV/c${NC}"
             set -x
             ./TMVAClassification.exe "${INPUTSNAME[j]}" "${INPUTBNAME[j]}" "${COLSYST[j]}" "${MYCUTS[j]}" "${MYCUTB[j]}" ${PTMIN[i]} ${PTMAX[i]}
 	    k=0
@@ -88,7 +91,8 @@ then
 	        k=$(($k+1))
 	    done
             set +x
-	    i=$(($i+1))    
+	    i=$(($i+1))
+            echo
         done
         j=$(($j+1))
     done    
@@ -112,7 +116,7 @@ then
 	        do
                     tPT=pt_$(float_to_string ${PTMIN[i]})_$(float_to_string ${PTMAX[i]})
                     TEND=TMVA_${MVA[k]}_${COLSYST[j]}_${tPT}
-                    echo -e "-- Processing \033[1;33m${MVA[k]}.C ${NC} pT bin: \033[1;32m${PTMIN[i]} - ${PTMAX[i]} GeV/c${NC}"
+                    echo -e "-- Processing \033[1;33m${MVA[k]}.C${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${PTMIN[i]} - ${PTMAX[i]} GeV/c${NC}"
                     if [ -f "myTMVA/weights/${TEND}.class.C" ]
                     then
 		        cd mva/
@@ -134,6 +138,7 @@ then
                     else
                         echo -e "\033[1;31merror:${NC} no weight file: myTMVA/weights/${TEND}.class.C"
                     fi
+                    echo
 	            i=$(($i+1))
 	        done
                 j=$(($j+1))
@@ -143,7 +148,7 @@ then
     done
 fi
 
-# Merge mva trees#
+# Merge mva trees #
 if [ $DOMERGE -eq 1 ]
 then
     k=0
@@ -155,13 +160,11 @@ then
             while ((j<$nCOL))
             do
                 OUTPUTS="${OUTPUTDIR}/${OUTPUTSNAME[j]}_TMVA_${MVA[k]}_${COLSYST[j]}.root"
+                echo -e "-- Processing \033[1;33mmerge${NC}, \033[1;32m${COLSYST[j]}${NC} MC, \033[1;32m${OUTPUTS}${NC}"
                 if [ -f $OUTPUTS ]
                 then
-                    echo -e "\033[1;31merror:${NC} target merged file exist: $OUTPUTS"
+                    echo -e "\033[1;31merror:${NC} target merged file exists: $OUTPUTS"
                 else
-                    echo
-                    echo -e "-- Processing \033[1;33mmerge ${NC}: $OUTPUTS"
-                    echo
                     HADDINPUTS=""
                     i=0
                     while ((i<$nPT))
@@ -185,14 +188,13 @@ then
                         echo -e "\033[1;31merror:${NC} no input files for $OUTPUTS"
                     fi
                 fi
+                echo
                 OUTPUTB="${OUTPUTDIR}/${OUTPUTBNAME[j]}_TMVA_${MVA[k]}_${COLSYST[j]}.root"
+                echo -e "-- Processing \033[1;33mmerge${NC}, \033[1;32m${COLSYST[j]}${NC} data, \033[1;32m${OUTPUTB}${NC}"
                 if [ -f $OUTPUTB ]
                 then
-                    echo -e "\033[1;31merror:${NC} target merged file exist: $OUTPUTB"
+                    echo -e "\033[1;31merror:${NC} target merged file exists: $OUTPUTB"
                 else
-                    echo
-                    echo -e "-- Processing \033[1;33mmerge ${NC}: $OUTPUTB"
-                    echo
                     HADDINPUTB=""
                     i=0
                     while ((i<$nPT))
@@ -216,6 +218,7 @@ then
                         echo -e "\033[1;31merror:${NC} no input files for $OUTPUTB"
                     fi
                 fi
+                echo
                 j=$(($j+1))
             done
         fi
@@ -228,6 +231,7 @@ if [ $DOREADXML -eq 1 ]
 then
     cd readxml/
     g++ readxml.cc $(root-config --cflags --libs) -l TMVA -l XMLIO -g -o readxml.exe
+    g++ readxml_Cuts.cc $(root-config --cflags --libs) -l TMVA -l XMLIO -g -o readxml_Cuts.exe
     j=0
     while ((j<$nCOL))
     do
@@ -239,7 +243,7 @@ then
             do
                 tPT=pt_$(float_to_string ${PTMIN[i]})_$(float_to_string ${PTMAX[i]})
                 TEND=TMVA_${MVA[k]}_${COLSYST[j]}_${tPT}
-                echo -e "-- Processing \033[1;33mreadxml.cc ${NC} pT bin: \033[1;32m${PTMIN[i]} - ${PTMAX[i]} GeV/c${NC}"
+                echo -e "-- Processing \033[1;33mreadxml*.cc${NC}, \033[1;32m${COLSYST[j]}${NC}, \033[1;32m${MVA[k]}${NC}, \033[1;32m${PTMIN[i]} - ${PTMAX[i]} GeV/c${NC}"
                 if [[ "${MVA[k]}" != Cuts* ]]
                 then 
                     OUTPUTS="${OUTPUTDIR}/${OUTPUTSNAME[j]}_TMVA_${MVA[k]}_${COLSYST[j]}.root"
@@ -261,8 +265,14 @@ then
                         set +x
                     fi
                 else
-                    echo "  CutsSA under construction"
-                    echo
+                    if [ ! -f "../myTMVA/weights/${TEND}.weights.xml" ]
+                    then
+                        echo -e "\033[1;31merror:${NC} no weight file: myTMVA/weights/${TEND}.weights.xml"
+                    else
+                        set -x
+                        ./readxml_Cuts.exe "${INPUTSNAME[j]}" "${INPUTBNAME[j]}" "$TEND" "../myTMVA/weights/${TEND}.weights.xml" "${COLSYST[j]}" "${MYCUTS[j]}" "${MYCUTB[j]}" "${MYCUTG[j]}" "1" "${MVA[k]}" ${PTMIN[i]} ${PTMAX[i]} ${LUMI[j]} ${RAA[j]}
+                        set +x
+                    fi
                 fi
                 echo
                 k=$(($k+1))
@@ -271,6 +281,7 @@ then
         done
         j=$(($j+1))
     done
+    rm readxml_Cuts.exe
     rm readxml.exe
     cd ..
 fi

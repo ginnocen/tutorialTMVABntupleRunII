@@ -9,10 +9,10 @@
 OUTPUTDIR="/data/wangj/TutorialsSamples/tmvaBntupleRunII/outputs/"
 </pre>
 </li>
-<li> Run the macros <br />
-<pre> 
+<li> Run the macros<br />
+<pre>
 source doTMVA.sh
-</pre> 
+</pre>
 <p> without any modification. </p>
 </li>
 </ol>
@@ -30,18 +30,16 @@ source doTMVA.sh
 <code> macros/BDT.C </code> builds a tree with branch of BDT (or other MVA) value for each candidate.
 
 <h3> Merging BDT trees with other trees </h3>
-<p> <code>doTMVA.sh</code> <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/doTMVA.sh#L151-227">L151-L227</a>. </p>
+<p> <code>doTMVA.sh</code> <a href="https://github.com/boundino/tutorialTMVABntupleRunII/blob/master/doTMVA.sh#L149-L225">L149-L225</a>. </p>
 
 <h3> readxml/ </h3>
 <ul>
 <li> <code>readxml.cc</code> is for BDT method (which can be easily developed to be applicable for other methods). It produces <a href=".backup/plots_for_readme/cmvadistribution_TMVA_BDT_PbPb_pt_10p0_15p0.pdf">BDT distribution</a>, <a href=".backup/plots_for_readme/cefficiency_TMVA_BDT_PbPb_pt_10p0_15p0.pdf">Efficiency vs. BDT cut value</a>, <a href=".backup/plots_for_readme/csignificance_TMVA_BDT_PbPb_pt_10p0_15p0.pdf">S/sqrt(S+B) vs. BDT cut value</a>, etc. <br />
 </li>
-<li> <code>readxml_Cuts.cc</code> is for rectangular cuts. It produces <a href=".backup/plots_for_readme/csignificance_TMVA_BDT_PbPb_pt_10p0_15p0.pdf">S/sqrt(S+B) vs. Signal efficiency</a>, etc. <br />
+<li> <code>readxml_Cuts.cc</code> is for rectangular cuts. It produces <a href=".backup/plots_for_readme/csignificance_TMVA_CutsSA_PbPb_pt_10p0_15p0.pdf">S/sqrt(S+B) vs. Signal efficiency</a>, etc. <br />
 </li>
-<li> Printout: <br />
-<a href=".backup/plots_for_readme/fresult_TMVA_BDT_PbPb_pt_10p0_15p0.txt">BDT</a> and <a href=".backup/plots_for_readme/fresult_TMVA_CutsSA_PbPb_pt_10p0_15p0.txt">CutsSA</a> which are also saved by the macros. <br />
+<li> Printout for <a href=".backup/plots_for_readme/fresult_TMVA_BDT_PbPb_pt_10p0_15p0.txt">BDT</a> and <a href=".backup/plots_for_readme/fresult_TMVA_CutsSA_PbPb_pt_10p0_15p0.txt">CutsSA</a>, which are also saved by the macros. <br />
 </li>
 </ul>
 
- 
-# <img src="plotsREADME/tmvaPrintout.png" alt="Printout" style="width:304px;height:228px">
+

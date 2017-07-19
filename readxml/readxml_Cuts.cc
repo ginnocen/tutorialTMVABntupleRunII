@@ -172,7 +172,7 @@ void readxml_Cuts(TString inputSname, TString inputBname, TString outputname,
 
   ofresult.close();
 
-  TH2F* hempty = new TH2F("hempty",Form(";%s;S/sqrt(S+B)",mvatype.Data()),50,0,1,10,0.,maxsig*1.4);
+  TH2F* hempty = new TH2F("hempty",";Signal efficiency;S/sqrt(S+B)",50,0,1,10,0.,maxsig*1.4);
   sethempty(hempty);
   TLatex* texPt = new TLatex(0.22,0.823, Form("%.0f < B^{+} p_{T} < %.0f GeV",ptmin,ptmax));
   texPt->SetNDC();

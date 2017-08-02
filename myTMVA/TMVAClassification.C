@@ -114,7 +114,7 @@ void TMVAClassification(TString inputSname, TString inputBname,
   Use["SVM"]             = 0;
   // 
   // --- Boosted Decision Trees
-  Use["BDT"]             = 1;  // uses Adaptive Boost
+  Use["BDT"]             = 0;  // uses Adaptive Boost
   Use["BDTG"]            = 0; // uses Gradient Boost
   Use["BDTB"]            = 0; // uses Bagging
   Use["BDTD"]            = 0; // decorrelation + Adaptive Boost
@@ -176,13 +176,9 @@ void TMVAClassification(TString inputSname, TString inputBname,
   // note that you may also use variable expressions, such as: "3*var1/var2*abs(var3)"
   // [all types of expressions that can also be parsed by TTree::Draw( "expression" )]
   
-  factory->AddVariable("Btrk1Pt");//>
-  factory->AddVariable("Bchi2cl");//>
-  factory->AddVariable("BsvpvDistance/BsvpvDisErr");//>
-  factory->AddVariable("cos(Bdtheta)");//>
-  factory->AddVariable("abs(Btrk1Eta)");//<
-  //
-  factory->AddVariable("Bmumupt");//>
+  factory->AddVariable("Dalpha");//>
+  factory->AddVariable("Dchi2cl");//>
+  factory->AddVariable("DsvpvDistance/DsvpvDisErr");//>
 
   // You can add so-called "Spectator variables", which are not used in the MVA training,
   // but will appear in the final "TestTree" produced by TMVA. This TestTree will contain the
@@ -205,15 +201,16 @@ void TMVAClassification(TString inputSname, TString inputBname,
    
    // --- Register the training and test trees
    
-  TTree* background = (TTree*)inputB->Get("ntKp");
+  TTree* background = (TTree*)inputB->Get("ntDkpi");
   background->AddFriend("ntHlt");
   background->AddFriend("ntHi");
   background->AddFriend("ntSkim");
-
-  TTree* signal = (TTree*)inputS->Get("ntKp");
+background->AddFriend("ntGen");
+  TTree* signal = (TTree*)inputS->Get("ntDkpi");
   signal->AddFriend("ntHlt");
   signal->AddFriend("ntHi");
   signal->AddFriend("ntSkim");
+background->AddFriend("ntGen");
 
    //global event weights per tree (see below for setting event-wise weights)
    double signalWeight     = 1.0;
@@ -280,8 +277,8 @@ void TMVAClassification(TString inputSname, TString inputBname,
    //    factory->PrepareTrainingAndTestTree( mycut,
    //                                         "NSigTrain=3000:NBkgTrain=3000:NSigTest=3000:NBkgTest=3000:SplitMode=Random:!V" );
    
-   TString cuts = isPbPb?Form("(%s)&&Bpt>%f&&Bpt<%f&&hiBin>=0&&hiBin<=200",mycuts.Data(),ptmin,ptmax):Form("(%s)&&Bpt>%f&&Bpt<%f",mycuts.Data(),ptmin,ptmax); 
-   TString cutb = isPbPb?Form("(%s)&&Bpt>%f&&Bpt<%f&&hiBin>=0&&hiBin<=200",mycutb.Data(),ptmin,ptmax):Form("(%s)&&Bpt>%f&&Bpt<%f",mycutb.Data(),ptmin,ptmax);
+   TString cuts = isPbPb?Form("(%s)&&Dpt>%f&&Dpt<%f&&hiBin>=0&&hiBin<=200",mycuts.Data(),ptmin,ptmax):Form("(%s)&&Dpt>%f&&Dpt<%f",mycuts.Data(),ptmin,ptmax); 
+   TString cutb = isPbPb?Form("(%s)&&Dpt>%f&&Dpt<%f&&hiBin>=0&&hiBin<=200",mycutb.Data(),ptmin,ptmax):Form("(%s)&&Dpt>%f&&Dpt<%f",mycutb.Data(),ptmin,ptmax);
    
    TCut mycutS = (TCut)cuts;
    TCut mycutB = (TCut)cutb;
@@ -315,7 +312,7 @@ void TMVAClassification(TString inputSname, TString inputBname,
 
    if (Use["CutsSA"])
       factory->BookMethod( TMVA::Types::kCuts, "CutsSA",
-                           "!H:!V:FitMethod=SA:EffSel:MaxCalls=150000:KernelTemp=IncAdaptive:InitialTemp=1e+6:MinTemp=1e-6:Eps=1e-10:UseDefaultScale:VarProp[0]=FMax:VarProp[1]=FMax:VarProp[2]=FMax:VarProp[3]=FMax:VarProp[4]=FMin::VarProp[5]=FMax" );
+                           "!H:!V:FitMethod=SA:EffSel:MaxCalls=150000:KernelTemp=IncAdaptive:InitialTemp=1e+6:MinTemp=1e-6:Eps=1e-10:UseDefaultScale:VarProp[0]=FMin:VarProp[1]=FMax:VarProp[2]=FMax" );
    //                           "!H:!V:FitMethod=SA:EffSel:MaxCalls=150000:KernelTemp=IncAdaptive:InitialTemp=1e+6:MinTemp=1e-6:Eps=1e-10:UseDefaultScale:VarProp[0]=FMax:VarProp[1]=FMax:VarProp[2]=FMax" );
 
    // Likelihood ("naive Bayes estimator")
